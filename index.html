@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Orkestr – Optimisez l'exécution opérationnelle en magasin</title>
+  <meta name="description" content="Orkestr transforme l'exécution en magasin en avantage concurrentiel grâce à des outils intelligents de gestion des tâches." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #0f172a;
+      --accent: #6366f1;
+      --accent-light: #818cf8;
+      --surface: #1e293b;
+      --surface2: #0f172a;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --border: #334155;
+      --green: #10b981;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--primary);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 2rem;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      font-size: 1.4rem; font-weight: 800; letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #fff 0%, var(--accent-light) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+
+    .nav-badge {
+      font-size: 0.7rem; background: var(--accent); color: #fff;
+      padding: 0.2rem 0.6rem; border-radius: 20px; font-weight: 600; letter-spacing: 0.5px;
+    }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      text-align: center;
+      padding: 8rem 2rem 4rem;
+      background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99,102,241,0.18) 0%, transparent 60%);
+      position: relative; overflow: hidden;
+    }
+
+    .hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%236366f1' fill-opacity='0.04'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      pointer-events: none;
+    }
+
+    .hero-content { max-width: 800px; position: relative; }
+
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: rgba(99,102,241,0.12); border: 1px solid rgba(99,102,241,0.3);
+      color: var(--accent-light); padding: 0.4rem 1rem; border-radius: 20px;
+      font-size: 0.8rem; font-weight: 500; margin-bottom: 1.5rem;
+    }
+
+    .hero-tag::before { content: '●'; font-size: 0.5rem; color: var(--green); }
+
+    h1 {
+      font-size: clamp(2.2rem, 5vw, 3.8rem);
+      font-weight: 800; line-height: 1.1;
+      letter-spacing: -1.5px; margin-bottom: 1.5rem;
+    }
+
+    h1 span {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+      font-size: 1.15rem; color: var(--muted); max-width: 600px;
+      margin: 0 auto 2.5rem;
+    }
+
+    .btn-group { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+    .btn-primary {
+      padding: 0.85rem 2rem; border-radius: 8px;
+      background: var(--accent); color: #fff; font-weight: 600; font-size: 0.95rem;
+      text-decoration: none; border: none; cursor: pointer;
+      transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.5rem;
+    }
+
+    .btn-primary:hover { background: var(--accent-light); transform: translateY(-1px); }
+
+    .btn-outline {
+      padding: 0.85rem 2rem; border-radius: 8px;
+      background: transparent; color: var(--text); font-weight: 500; font-size: 0.95rem;
+      text-decoration: none; border: 1px solid var(--border); cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-outline:hover { border-color: var(--accent-light); color: var(--accent-light); }
+
+    /* STATS */
+    .stats {
+      display: flex; justify-content: center; gap: 3rem; flex-wrap: wrap;
+      margin-top: 4rem; padding-top: 4rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .stat { text-align: center; }
+    .stat-num { font-size: 2rem; font-weight: 800; color: var(--accent-light); }
+    .stat-label { font-size: 0.85rem; color: var(--muted); margin-top: 0.2rem; }
+
+    /* SECTION */
+    section { padding: 5rem 2rem; }
+    .container { max-width: 1100px; margin: 0 auto; }
+
+    .section-tag {
+      font-size: 0.75rem; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;
+      color: var(--accent-light); margin-bottom: 0.75rem;
+    }
+
+    h2 {
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+      font-weight: 800; letter-spacing: -1px; margin-bottom: 1rem;
+    }
+
+    .section-desc { color: var(--muted); font-size: 1.05rem; max-width: 600px; margin-bottom: 3rem; }
+
+    /* MODULES */
+    .modules { background: var(--surface2); }
+
+    .modules-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .module-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 2rem;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .module-card:hover { border-color: var(--accent); transform: translateY(-3px); }
+
+    .module-icon {
+      width: 44px; height: 44px; border-radius: 10px;
+      background: rgba(99,102,241,0.15); display: flex; align-items: center;
+      justify-content: center; font-size: 1.3rem; margin-bottom: 1rem;
+    }
+
+    .module-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.75rem; }
+
+    .module-badge {
+      display: inline-block; font-size: 0.65rem; font-weight: 600; letter-spacing: 1px;
+      text-transform: uppercase; padding: 0.2rem 0.6rem; border-radius: 20px;
+      margin-bottom: 1rem;
+    }
+
+    .badge-live { background: rgba(16,185,129,0.12); color: var(--green); border: 1px solid rgba(16,185,129,0.3); }
+    .badge-dev { background: rgba(99,102,241,0.12); color: var(--accent-light); border: 1px solid rgba(99,102,241,0.3); }
+
+    .feature-list { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
+
+    .feature-list li {
+      display: flex; align-items: flex-start; gap: 0.6rem;
+      font-size: 0.88rem; color: var(--muted);
+    }
+
+    .feature-list li::before {
+      content: '✓'; color: var(--green); font-weight: 700; font-size: 0.8rem;
+      margin-top: 0.1rem; flex-shrink: 0;
+    }
+
+    /* AI SECTION */
+    .ai-section { background: var(--primary); }
+
+    .ai-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;
+    }
+
+    @media (max-width: 768px) { .ai-grid { grid-template-columns: 1fr; gap: 2rem; } }
+
+    .ai-features { display: flex; flex-direction: column; gap: 1.25rem; }
+
+    .ai-feature {
+      display: flex; gap: 1rem; align-items: flex-start;
+      padding: 1.25rem; border-radius: 10px;
+      border: 1px solid var(--border); background: var(--surface);
+      transition: border-color 0.2s;
+    }
+
+    .ai-feature:hover { border-color: var(--accent); }
+
+    .ai-feature-icon {
+      font-size: 1.4rem; width: 40px; flex-shrink: 0;
+      padding-top: 0.1rem;
+    }
+
+    .ai-feature h4 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.3rem; }
+    .ai-feature p { font-size: 0.85rem; color: var(--muted); }
+
+    .ai-visual {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; padding: 2rem;
+      position: relative; overflow: hidden;
+    }
+
+    .ai-visual::before {
+      content: ''; position: absolute; top: 0; right: 0;
+      width: 200px; height: 200px;
+      background: radial-gradient(circle, rgba(99,102,241,0.2) 0%, transparent 70%);
+    }
+
+    .ai-metric {
+      background: var(--primary); border: 1px solid var(--border);
+      border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 1rem;
+    }
+
+    .ai-metric-label { font-size: 0.75rem; color: var(--muted); margin-bottom: 0.5rem; }
+    .ai-metric-value { font-size: 1.5rem; font-weight: 800; }
+    .ai-metric-value.positive { color: var(--green); }
+    .ai-metric-value.accent { color: var(--accent-light); }
+
+    .ai-bar { height: 6px; border-radius: 3px; background: var(--border); margin-top: 0.5rem; overflow: hidden; }
+    .ai-bar-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--accent), var(--accent-light)); }
+
+    /* CTA */
+    .cta-section {
+      text-align: center;
+      background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(99,102,241,0.12) 0%, transparent 70%);
+    }
+
+    .cta-section h2 { margin-bottom: 1rem; }
+    .cta-section p { color: var(--muted); margin-bottom: 2rem; font-size: 1.05rem; }
+
+    /* FOOTER */
+    footer {
+      background: var(--surface2); border-top: 1px solid var(--border);
+      padding: 2.5rem 2rem; text-align: center;
+    }
+
+    .footer-links { display: flex; justify-content: center; gap: 2rem; margin-top: 1rem; flex-wrap: wrap; }
+    .footer-links a { color: var(--muted); text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--accent-light); }
+
+    .footer-logo { font-size: 1.2rem; font-weight: 800; margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, #fff 0%, var(--accent-light) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="logo">Orkestr</div>
+    <span class="nav-badge">En développement</span>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-tag">Plateforme retail intelligente</div>
+      <h1>Optimisez l'exécution<br /><span>opérationnelle en magasin</span></h1>
+      <p>Orkestr transforme l'exécution en magasin en avantage concurrentiel grâce à des outils intelligents de gestion des tâches, qui maximisent l'efficacité opérationnelle et améliorent les marges dans les opérations retail.</p>
+      <div class="btn-group">
+        <a href="supermarketproj@gmail.com" class="btn-primary">Demander une démo →</a>
+        <a href="#modules" class="btn-outline">Découvrir la plateforme</a>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="stat-num">3</div><div class="stat-label">Modules intégrés</div></div>
+        <div class="stat"><div class="stat-num">IA</div><div class="stat-label">Moteur propriétaire</div></div>
+        <div class="stat"><div class="stat-num">360°</div><div class="stat-label">Vision opérationnelle</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MODULES -->
+  <section class="modules" id="modules">
+    <div class="container">
+      <div class="section-tag">La plateforme</div>
+      <h2>La plateforme unifiée et intelligente<br />de gestion des opérations retail</h2>
+      <p class="section-desc">Trois modules complémentaires pour couvrir l'ensemble de votre chaîne opérationnelle.</p>
+
+      <div class="modules-grid">
+
+        <div class="module-card">
+          <div class="module-icon">📋</div>
+          <span class="module-badge badge-dev">En développement</span>
+          <h3>Gestion quotidienne des activités</h3>
+          <ul class="feature-list">
+            <li>Gestion intuitive des tâches pour fluidifier les opérations quotidiennes et améliorer la communication des équipes</li>
+            <li>Répartition intelligente des tâches basée sur les compétences, la disponibilité et l'équité au sein de l'équipe</li>
+            <li>Gestion automatisée des tâches récurrentes pour garantir la cohérence des opérations</li>
+            <li>Communication ascendante fluide grâce à des alertes intégrées</li>
+            <li>Listes de tâches et checklists personnelles pour aider les équipes à rester organisées</li>
+            <li>Outils simples de supervision pour maintenir des standards opérationnels élevés</li>
+          </ul>
+        </div>
+
+        <div class="module-card">
+          <div class="module-icon">📊</div>
+          <span class="module-badge badge-dev">En développement</span>
+          <h3>Moteur d'optimisation des ventes</h3>
+          <ul class="feature-list">
+            <li>Tableau de bord centralisé de performance produit avec des KPI par SKU : prix d'achat, prix de vente, couverture de stock</li>
+            <li>Optimisation de l'assortiment basée sur la donnée, avec des recommandations fondées sur les performances historiques</li>
+            <li>Suggestions intelligentes de pricing pour améliorer la rentabilité et la rotation des produits</li>
+            <li>Alertes automatisées et recommandations d'actions pour les produits à faible rotation ou surstocks</li>
+          </ul>
+        </div>
+
+        <div class="module-card">
+          <div class="module-icon">📦</div>
+          <span class="module-badge badge-dev">En développement</span>
+          <h3>Gestion intelligente des stocks</h3>
+          <ul class="feature-list">
+            <li>Alertes proactives pour prévenir les ruptures de stock et anticiper les besoins de réapprovisionnement</li>
+            <li>Workflows automatisés de réassort, avec bons de commande préremplis</li>
+            <li>Recommandations de réapprovisionnement basées sur la donnée, prenant en compte les marges et la couverture de stock</li>
+            <li>Analyse des prix fournisseurs et alternatives d'approvisionnement pour optimiser les coûts d'achat</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- AI SECTION -->
+  <section class="ai-section">
+    <div class="container">
+      <div class="ai-grid">
+        <div>
+          <div class="section-tag">Intelligence artificielle</div>
+          <h2>Moteur propriétaire basé sur l'IA</h2>
+          <p class="section-desc">Automatisez les opérations quotidiennes sources de rentabilité, de la gestion des commandes à l'assortiment.</p>
+
+          <div class="ai-features">
+            <div class="ai-feature">
+              <div class="ai-feature-icon">🎯</div>
+              <div>
+                <h4>Recommander les actions optimales</h4>
+                <p>Réapprovisionnement optimal basé sur les marges, la couverture de stock et la vitesse de vente.</p>
+              </div>
+            </div>
+            <div class="ai-feature">
+              <div class="ai-feature-icon">⚡</div>
+              <div>
+                <h4>Simplifier les activités quotidiennes</h4>
+                <p>Convertir tout type d'entrée (voix, texte, scan) en actions concrètes : tâches, alertes ou recommandations.</p>
+              </div>
+            </div>
+            <div class="ai-feature">
+              <div class="ai-feature-icon">🚨</div>
+              <div>
+                <h4>Alerter sur les risques</h4>
+                <p>Prédire et détecter les perturbations de stock avant qu'elles n'impactent les ventes ou l'expérience client.</p>
+              </div>
+            </div>
+            <div class="ai-feature">
+              <div class="ai-feature-icon">🤖</div>
+              <div>
+                <h4>Automatiser les tâches récurrentes</h4>
+                <p>Automatiser le traitement des commandes, le reporting, et les mises à jour de prix.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ai-visual">
+          <div class="ai-metric">
+            <div class="ai-metric-label">Optimisation des marges</div>
+            <div class="ai-metric-value positive">+18.4%</div>
+            <div class="ai-bar"><div class="ai-bar-fill" style="width:72%"></div></div>
+          </div>
+          <div class="ai-metric">
+            <div class="ai-metric-label">Réduction des ruptures de stock</div>
+            <div class="ai-metric-value accent">-63%</div>
+            <div class="ai-bar"><div class="ai-bar-fill" style="width:63%"></div></div>
+          </div>
+          <div class="ai-metric">
+            <div class="ai-metric-label">Gain de temps opérationnel</div>
+            <div class="ai-metric-value positive">+40%</div>
+            <div class="ai-bar"><div class="ai-bar-fill" style="width:80%"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <div class="container">
+      <div class="section-tag">Rejoindre Orkestr</div>
+      <h2>Prêt à transformer vos opérations retail ?</h2>
+      <p>Rejoignez les équipes retail qui optimisent leur exécution avec Orkestr.</p>
+      <a href="supermarketproj@gmail.com" class="btn-primary">Demander un accès anticipé →</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-logo">Orkestr</div>
+    <p style="color: var(--muted); font-size:0.85rem;">La plateforme intelligente de gestion des opérations retail.</p>
+    <div class="footer-links">
+      <a href="/privacy.html">Politique de confidentialité</a>
+      <a href="/terms.html">Conditions d'utilisation</a>
+      <a href="mailto:supermarketproj@gmail.com">Contact</a>
+    </div>
+    <p style="color: var(--border); font-size:0.8rem; margin-top:1.5rem;">© 2025 Orkestr. Tous droits réservés.</p>
+  </footer>
+
+</body>
+</html>
